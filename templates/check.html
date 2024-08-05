@@ -1,18 +1,30 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         {{ form.emailText.label }} {{ form.emailText }}
         {{ form.submit }}
     </form>
 
     {% if email_text %}
-        <h1>{{ email_text }}</h1>
+        <p>text entered: {{ email_text }}</p>
     {% endif %}
-    {% if booli %}
-        <h2>not spam</h2>
-    {% else %}
-        <h2>spam</h2>
+    {% if booli is not none %}
+        {% if booli %}
+            <h2 style="color: green;">classified: not spam</h2>
+        {% else %}
+            <h2 style="color: red;">classified: spam</h2>
+        {% endif %}
     {% endif %}
+
+    <br>
+
+    <p>Upload your files here:</p>
+    <p style="font-size: small; padding-bottom: 0; ">file name should be : User_Input.csv</p>
+    <p style="font-size: small;">required fields: text(string) and label(0/1)</p>
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
 {% endblock %}

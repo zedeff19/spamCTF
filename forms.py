@@ -8,5 +8,5 @@ class SignupForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
 class SpamForm(FlaskForm):
-    emailText = StringField('Email Text', validators=[DataRequired(), Email()])
+    emailText = StringField('Email Text', validators=[DataRequired()])
     submit = SubmitField('Check')

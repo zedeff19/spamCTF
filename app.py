@@ -6,9 +6,15 @@ import pickle
 import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
+import os
+
+
+
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
 
 class SimpleModel(nn.Module):
     def __init__(self):
@@ -52,11 +58,15 @@ model.load_state_dict(new_state_dict)
 model.eval()
 
 def encode_string(input_string):
+    if input_string is None:
+        return torch.tensor([], dtype=torch.float32)
+    
     # Transform the text using the TF-IDF vectorizer
     X = vectorizer.transform([input_string])
     print("Shape of TF-IDF features:", X.shape)  # Debugging line
     # Convert the sparse matrix to a dense tensor
     return torch.tensor(X.toarray(), dtype=torch.float32)
+
 
 
 @app.route('/')
@@ -67,17 +77,30 @@ def index():
 def check():
     form = SpamForm()  # Use SpamForm here
     if form.is_submitted() and request.method == 'POST':
+        # Debugging line to check if emailText is retrieved correctly
         email_text1 = request.form.get('emailText')
-        email_text = encode_string(email_text1)
-        # booli = if model(email_text).item() > 0 :  #
-        booli = True
-        if round(model(email_text).item()) == 0:
-            booli = False
-        # booli = not booli
-        print(booli)
+        print("emailText:", email_text1)  # Debugging line
 
+        if email_text1:
+            email_text = encode_string(email_text1)
+            booli = True
+            if round(model(email_text).item()) == 0:
+                booli = False
+            print(booli)
+        else:
+            email_text1 = ""
+            booli = None
+        
+        # Handle file upload
+        if 'file' in request.files:
+            file = request.files['file']
+            if file.filename != '':
+                # Save the file to the local file system
+                file.save(f'Data/{file.filename}')
+        
         return render_template('check.html', email_text=email_text1, form=form, booli=booli)
     return render_template('check.html', form=form)
+
 
 @app.route('/update_flag', methods=['GET'])
 def update_flag():

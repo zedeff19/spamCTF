@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Your App Title{% endblock %}</title>
+    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Main.css') }}">
 </head>
 <body>
     {% block body %}{% endblock %}
