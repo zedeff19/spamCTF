@@ -5,7 +5,6 @@ import torch.nn as nn
 import pickle
 import numpy as np
 import warnings
-import random
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
@@ -38,8 +37,15 @@ state_dict = torch.load('models/model.pth')
 
 # Adjust the keys in the state_dict to match the expected format
 new_state_dict = {}
-new_state_dict['model.0.weight'] = state_dict['0.weight']
-new_state_dict['model.0.bias'] = state_dict['0.bias']
+try : 
+    new_state_dict['model.0.weight'] = state_dict['0.weight']
+    new_state_dict['model.0.bias'] = state_dict['0.bias']
+except KeyError as e : 
+    try : 
+        new_state_dict['model.0.weight'] = state_dict['model.0.weight']
+        new_state_dict['model.0.bias'] = state_dict['model.0.bias']
+    except Exception : 
+        pass
 # new_state_dict['model.2.weight'] = state_dict['2.weight']
 # new_state_dict['model.2.bias'] = state_dict['2.bias']
 model.load_state_dict(new_state_dict)
@@ -72,6 +78,11 @@ def check():
 
         return render_template('check.html', email_text=email_text1, form=form, booli=booli)
     return render_template('check.html', form=form)
+
+@app.route('/update_flag', methods=['GET'])
+def update_flag():
+    # Here you can add logic to handle the flag update if needed
+    return "Model training complete and Flask app notified!"
 
 if __name__ == '__main__':
     app.run(debug=True)
