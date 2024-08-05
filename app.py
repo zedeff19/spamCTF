@@ -5,6 +5,7 @@ import torch.nn as nn
 import pickle
 import numpy as np
 import warnings
+import random
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
@@ -22,6 +23,8 @@ class SimpleModel(nn.Module):
         )
     
     def forward(self, x):
+        perturbation = torch.randn_like(x) * 0.01
+        x = x + perturbation
         return self.model(x)
 
 # Load the TF-IDF vectorizer
@@ -64,6 +67,7 @@ def check():
         booli = True
         if round(model(email_text).item()) == 0:
             booli = False
+        # booli = not booli
         print(booli)
 
         return render_template('check.html', email_text=email_text1, form=form, booli=booli)
