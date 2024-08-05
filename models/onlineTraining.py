@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 import pickle
 import warnings
+import urllib.request  # Use urllib to make a web request
 warnings.filterwarnings('ignore')
 
 
@@ -110,3 +111,7 @@ for epoch in range(num_epochs):
 # Save the updated model weights
 torch.save(model.state_dict(), 'models/model.pth')
 print(f"Updated state_dict : {model.state_dict}")
+
+url = 'http://127.0.0.1:5000/update_flag'  # Change this to your Flask app's URL
+response = urllib.request.urlopen(url)
+print("Flask app response:", response.read().decode('utf-8'))
